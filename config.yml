@@ -1,0 +1,20 @@
+# Enable lots of debugging output in the console (for troubleshooting)
+debug: false
+
+# Broadcast the location of each horse group spawned (debugging only!)
+broadcast-location: false
+
+# World that horses should spawn in
+horse-world: world
+
+# MINIMUM time before more horses are able to spawn
+spawn-delay: 180
+
+# Only spawn horses if X surrounding chunks are animal free 
+chunk-check-radius: 2
+
+# % Chance of spawning horse or donkey
+spawn-chance: 1
+
+# % Chance that it will spawn a donkey instead of a horse
+donkey-chance: 10
