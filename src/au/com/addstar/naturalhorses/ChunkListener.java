@@ -8,9 +8,8 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_6_R1.CraftWorld;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -20,12 +19,11 @@ public class ChunkListener implements Listener {
 	public ChunkListener(NaturalHorses instance) {
 		plugin = instance;
 	}
-
 	
 	@EventHandler
 	public void onChunkLoad(ChunkLoadEvent event) {
 		if (event.isNewChunk()) { return; }
-		if (!event.getWorld().getName().equals(plugin.HorseWorld)) { return; }
+		if (!event.getWorld().getName().equals(NaturalHorses.HorseWorld)) { return; }
 		
 		World world = event.getWorld();
 		Chunk chunk = event.getChunk();
@@ -48,11 +46,11 @@ public class ChunkListener implements Listener {
 		// Only spawn horses in "full plains" (all four corners are plains)
 		if (bname == "FULL PLAINS") {
 			// % chance of spawning?
-			if (plugin.RandomGen.nextDouble() <= plugin.SpawnChance) {
+			if (NaturalHorses.RandomGen.nextInt(100) < NaturalHorses.SpawnChance) {
 				
 				// Surrounding chunks must also be empty (grid loop)
-				int from = (0 - plugin.ChunkRadius);
-				int to   = plugin.ChunkRadius;
+				int from = (0 - NaturalHorses.ChunkRadius);
+				int to   = NaturalHorses.ChunkRadius;
 				
 				for (int x = from; x < to; x++) {
 					for (int z = from; z < to; z++) {
@@ -64,52 +62,45 @@ public class ChunkListener implements Listener {
 								return;
 							}
 						}
-						//if ((ents != null) && (ents.length > 0)) {
-						//	plugin.Debug("Area not empty: " + (CX+x) + " / " + (CZ+z) + " (not spawning horses)");
-						//	return;
-						//}
 					}
 				}
 				
 				plugin.Debug("Chunk: " + world.getName() + ": " + CX + "/" + CZ + " = " + BX + " / " + BZ);
 
 				// How many horses to spawn?
-				int h = plugin.RandomGen.nextInt(5) + 2;
+				int h = NaturalHorses.RandomGen.nextInt(5) + 2;
 				Date date = new Date();
 				long now = date.getTime();
 				
 				boolean EntitySpawned = false;
 				for (int i = 0; i < h; i++) {
 					// Spread horses out randomly around the selected chunk
-					int RX = BX + plugin.RandomGen.nextInt(8);
-					int RZ = BZ + plugin.RandomGen.nextInt(8);
+					int RX = BX + NaturalHorses.RandomGen.nextInt(8);
+					int RZ = BZ + NaturalHorses.RandomGen.nextInt(8);
 					Location loc = new Location(world, RX, world.getHighestBlockYAt(RX, RZ)-1, RZ);
 					// Only spawn on grass
 					if (world.getBlockTypeIdAt(loc) == Material.GRASS.getId()) {
-						Location entloc = new Location(world, RX, loc.getY()+2, RZ);
+						Location entloc = new Location(world, RX+1, loc.getY()+2, RZ+1);
 
 						// Check if WorldGuard allows us to spawn here
 						if (plugin.CanSpawnMob(entloc)) {
-							plugin.Debug("Last spawn " + (plugin.LastSpawn / 1000) + " / now " + (now / 1000));
-							if ((plugin.LastSpawn > 0) && (now < (plugin.LastSpawn + (plugin.SpawnDelay * 1000)))) {
-								plugin.Debug("Refusing to spawn anything.. too soon..");
+							//plugin.Debug("Last spawn " + (plugin.LastSpawn / 1000) + " / now " + (now / 1000));
+							if ((plugin.LastSpawn > 0) && (now < (plugin.LastSpawn + (NaturalHorses.SpawnDelay * 1000)))) {
+								plugin.Debug("Too soon.. Refusing to spawn anything");
 								return;
 							}
 
-							// Horse or donkey?
-							EntityType enttype = EntityType.COW;
-							String entname = "Horsey";
-							if (plugin.RandomGen.nextDouble() <= plugin.DonkeyChance) {
-								enttype = EntityType.PIG;
-								entname = "Donkey";
-							}
-							
-							plugin.Debug("Spawn " + entname + " at: " + world.getName() + " / X:" + entloc.getBlockX() + " Y:" + entloc.getBlockY() + " Z:" + entloc.getBlockZ());
+							//plugin.Debug("Spawn at: " + world.getName() + " / X:" + entloc.getBlockX() + " Y:" + entloc.getBlockY() + " Z:" + entloc.getBlockZ());
 
-							// Spawn the "horse"
-							LivingEntity ent = (LivingEntity) world.spawnEntity(entloc, enttype);
-							ent.setCustomName(entname + " " + (i + 1));
-							ent.setCustomNameVisible(true);
+							// Spawn the "horse" (the correct way, when Bukkit API supports it)
+							//LivingEntity ent = (LivingEntity) world.spawnEntity(entloc, enttype);
+							
+							// Spawn horses the "NMS" way!
+							net.minecraft.server.v1_6_R1.World mcWorld = ((CraftWorld) world).getHandle();
+							MyHorse mcEntity = new MyHorse(mcWorld);
+							mcEntity.teleportTo(entloc, false);
+							plugin.Debug(mcEntity.getLocalizedName() + " (" + mcEntity.bQ() + "): " + mcEntity.toString());
+
 							EntitySpawned = true;
 						} else {
 							plugin.Debug("Entity spawning disabled here");
@@ -122,9 +113,15 @@ public class ChunkListener implements Listener {
 				// Tell everyone where the horse herd has been spawned (for debugging only)
 				if (EntitySpawned) {
 					plugin.LastSpawn = now; 
-					if (plugin.DebugEnabled) {
-						plugin.getServer().broadcastMessage(ChatColor.YELLOW + "[NaturalHorses] " + ChatColor.WHITE + "Horse herd spawned: X:" + BX + " Y:" + world.getHighestBlockAt(BX, BZ).getY() + " Z:" + BZ);
+
+					String msg = ChatColor.YELLOW + "[NaturalHorses] " + ChatColor.WHITE + "Horses spawned (" + h + "): X:" + BX + " Y:" + world.getHighestBlockAt(BX, BZ).getY() + " Z:" + BZ;
+					if (NaturalHorses.BroadcastLocation) {
+						plugin.getServer().broadcastMessage(msg);
 					}
+					else if (NaturalHorses.DebugEnabled) {
+						plugin.Debug(msg);
+					}
+					
 				}
 			}
 		}

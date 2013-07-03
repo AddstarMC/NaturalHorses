@@ -1,6 +1,8 @@
 package au.com.addstar.naturalhorses;
+import java.lang.reflect.Method;
 import java.util.Random;
 import java.util.logging.Logger;
+
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 import org.bukkit.Location;
@@ -18,35 +20,58 @@ public class NaturalHorses extends JavaPlugin {
 	public PluginDescriptionFile pdfFile = null;
 	public PluginManager pm = null;
 	private static final Logger logger = Logger.getLogger("Minecraft");
-	public boolean DebugEnabled = true;
-	public Random RandomGen = new Random();
+	public ConfigManager cfg = new ConfigManager(this);
 	public WorldGuardPlugin WG;
 	public RegionManager RM;
 	public long LastSpawn = 0;
+	public static Random RandomGen = new Random();
 
 	// Pluing settings
-	public String HorseWorld = "survival";
-	public int SpawnDelay = 30;
-	public int ChunkRadius = 2;
-	public double SpawnChance = 0.01;
-	public double DonkeyChance = 0.05;
+	public static boolean DebugEnabled = false;
+	public static boolean BroadcastLocation = false;
+	public static String HorseWorld = "survival";
+	public static int SpawnDelay = 30;
+	public static int ChunkRadius = 2;
+	public static int SpawnChance = 1;
+	public static int DonkeyChance = 10;
 	
 	@Override
 	public void onEnable() {
 		// Register necessary events
 		pdfFile = this.getDescription();
 		pm = this.getServer().getPluginManager();
-		pm.registerEvents(new ChunkListener(this), this);
+
+		// Read (or initialise) plugin config file
+		cfg.LoadConfig(getConfig());
+
+		// Save the default config (if one doesn't exist)
+		saveDefaultConfig();
+
 		WG = getWorldGuard();
 		if (WG == null) {
-			instance.setEnabled(false);
-			Log(" WorldGuard plugin NOT found!");
+			Log("WorldGuard not detected, integration disabled.");
 		} else {
 			RM = WG.getRegionManager(getServer().getWorld(HorseWorld));
 			Log("WorldGuard integration successful.");
 			
 		}
-		
+
+		try{
+            @SuppressWarnings("rawtypes")
+            Class[] args = new Class[3];
+            args[0] = Class.class;
+            args[1] = String.class;
+            args[2] = int.class;
+ 
+            Method a = net.minecraft.server.v1_6_R1.EntityTypes.class.getDeclaredMethod("a", args);
+            a.setAccessible(true);
+            a.invoke(a, MyHorse.class, "Horse", 100);
+        }catch (Exception e){
+            e.printStackTrace();
+            this.setEnabled(false);
+        }
+
+		pm.registerEvents(new ChunkListener(this), this);
 		Log(pdfFile.getName() + " " + pdfFile.getVersion() + " has been enabled");
 	}
 	
@@ -86,4 +111,3 @@ public class NaturalHorses extends JavaPlugin {
 		return set.allows(DefaultFlag.MOB_SPAWNING);
 	}
 }
-
