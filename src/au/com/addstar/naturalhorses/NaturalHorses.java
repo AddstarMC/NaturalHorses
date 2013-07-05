@@ -99,13 +99,14 @@ public class NaturalHorses extends JavaPlugin {
 	 
 	    // WorldGuard may not be loaded
 	    if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-	        return null; // Maybe you want throw an exception instead
+	        return null;
 	    }
 	 
 	    return (WorldGuardPlugin) plugin;
 	}
 	
 	public boolean CanSpawnMob(Location loc) {
+		if (WG == null) { return true; }
 		ApplicableRegionSet set = RM.getApplicableRegions(loc);
 		if (set == null) { return true; }
 		return set.allows(DefaultFlag.MOB_SPAWNING);

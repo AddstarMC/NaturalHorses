@@ -1,6 +1,6 @@
 name: NaturalHorses
 main: au.com.addstar.naturalhorses.NaturalHorses
-version: 1.0.0
+version: 1.0.1
 author: add5tar
 softdepend: [Essentials, Vault, Multiverse-Core, My Worlds]
 website: http://dev.bukkit.org/server-mods/naturalhorses/
