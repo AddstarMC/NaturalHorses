@@ -8,11 +8,15 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_6_R1.CraftWorld;
+//import org.bukkit.craftbukkit.v1_6_R1.CraftWorld;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
+
+import au.com.addstar.naturalhorses.HorseModifier.HorseType;
+import au.com.addstar.naturalhorses.HorseModifier.HorseVariant;
 
 public class ChunkListener implements Listener {
 	private NaturalHorses plugin;
@@ -92,14 +96,34 @@ public class ChunkListener implements Listener {
 
 							//plugin.Debug("Spawn at: " + world.getName() + " / X:" + entloc.getBlockX() + " Y:" + entloc.getBlockY() + " Z:" + entloc.getBlockZ());
 
-							// Spawn the "horse" (the correct way, when Bukkit API supports it)
-							//LivingEntity ent = (LivingEntity) world.spawnEntity(entloc, enttype);
+							// Spawn the horse/donkey
+							HorseModifier ent = HorseModifier.spawn(entloc);
+							LivingEntity horse = ent.getHorse();
+
+							// Donkey or horse?
+							if (NaturalHorses.RandomGen.nextInt(100) < NaturalHorses.DonkeyChance) {
+								ent.setType(HorseType.DONKEY);
+							} else {
+								ent.setType(HorseType.NORMAL);
+							}
+
+							// Horse colours/markings
+							if (ent.getType() == HorseType.NORMAL) {
+								int variant = NaturalHorses.RandomGen.nextInt(7);
+								int markings = NaturalHorses.RandomGen.nextInt(5);
+								int id = ((markings * 256) + (variant));
+								ent.setVariant(HorseVariant.fromId(id));
+							}
 							
-							// Spawn horses the "NMS" way!
-							net.minecraft.server.v1_6_R1.World mcWorld = ((CraftWorld) world).getHandle();
-							MyHorse mcEntity = new MyHorse(mcWorld);
-							mcEntity.teleportTo(entloc, false);
-							plugin.Debug(mcEntity.getLocalizedName() + " (" + mcEntity.bQ() + "): " + mcEntity.toString());
+							ent.setTamed(false);
+							ent.setSaddled(false);
+							ent.setBred(false);
+							horse.setRemoveWhenFarAway(true);
+
+							// Set the horse MaxHealth: 16 - 30 half hearts (8 - 15 full hearts) 
+							int mxh = (NaturalHorses.RandomGen.nextInt(14) + 16);
+							horse.setMaxHealth((double) mxh);
+							plugin.Debug(ent.getType().getName() + " (" + ent.getVariant().getName() + "): " + ent.toString());
 
 							EntitySpawned = true;
 						} else {

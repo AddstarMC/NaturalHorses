@@ -11,7 +11,7 @@ horse-world: world
 spawn-delay: 180
 
 # Only spawn horses if X surrounding chunks are animal free 
-chunk-check-radius: 2
+chunk-check-radius: 3
 
 # % Chance of spawning horse or donkey
 spawn-chance: 1

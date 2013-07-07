@@ -1,5 +1,4 @@
 package au.com.addstar.naturalhorses;
-import java.lang.reflect.Method;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -47,6 +46,14 @@ public class NaturalHorses extends JavaPlugin {
 		// Save the default config (if one doesn't exist)
 		saveDefaultConfig();
 
+		// Make sure the world is valid
+		if (getServer().getWorld(HorseWorld) == null) {
+			Log("World \"" + HorseWorld + "\" does not exist!");
+			Log(pdfFile.getName() + " " + pdfFile.getVersion() + " has NOT been enabled!");
+			this.setEnabled(false);
+			return;
+		}
+
 		WG = getWorldGuard();
 		if (WG == null) {
 			Log("WorldGuard not detected, integration disabled.");
@@ -55,21 +62,6 @@ public class NaturalHorses extends JavaPlugin {
 			Log("WorldGuard integration successful.");
 			
 		}
-
-		try{
-            @SuppressWarnings("rawtypes")
-            Class[] args = new Class[3];
-            args[0] = Class.class;
-            args[1] = String.class;
-            args[2] = int.class;
- 
-            Method a = net.minecraft.server.v1_6_R1.EntityTypes.class.getDeclaredMethod("a", args);
-            a.setAccessible(true);
-            a.invoke(a, MyHorse.class, "Horse", 100);
-        }catch (Exception e){
-            e.printStackTrace();
-            this.setEnabled(false);
-        }
 
 		pm.registerEvents(new ChunkListener(this), this);
 		Log(pdfFile.getName() + " " + pdfFile.getVersion() + " has been enabled");
@@ -81,16 +73,16 @@ public class NaturalHorses extends JavaPlugin {
 	}
 
 	public void Log(String data) {
-		logger.info(pdfFile.getName() + " " + data);
+		logger.info("[" + pdfFile.getName() + "] " + data);
 	}
 
 	public void Warn(String data) {
-		logger.warning(pdfFile.getName() + " " + data);
+		logger.warning("[" + pdfFile.getName() + "] " + data);
 	}
 	
 	public void Debug(String data) {
 		if (DebugEnabled) {
-			logger.info(pdfFile.getName() + " " + data);
+			logger.info("[" + pdfFile.getName() + "] " + data);
 		}
 	}
 
