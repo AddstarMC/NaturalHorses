@@ -35,7 +35,7 @@ public class NaturalHorses extends JavaPlugin {
 	public static int DonkeyChance = 10;
 	
 	@Override
-	public void onEnable() {
+	public void onLoad() {
 		// Register necessary events
 		pdfFile = this.getDescription();
 		pm = this.getServer().getPluginManager();
