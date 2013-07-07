@@ -1,5 +1,4 @@
 package au.com.addstar.naturalhorses;
-import java.lang.reflect.Method;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -55,21 +54,6 @@ public class NaturalHorses extends JavaPlugin {
 			Log("WorldGuard integration successful.");
 			
 		}
-
-		try{
-            @SuppressWarnings("rawtypes")
-            Class[] args = new Class[3];
-            args[0] = Class.class;
-            args[1] = String.class;
-            args[2] = int.class;
- 
-            Method a = net.minecraft.server.v1_6_R1.EntityTypes.class.getDeclaredMethod("a", args);
-            a.setAccessible(true);
-            a.invoke(a, MyHorse.class, "Horse", 100);
-        }catch (Exception e){
-            e.printStackTrace();
-            this.setEnabled(false);
-        }
 
 		pm.registerEvents(new ChunkListener(this), this);
 		Log(pdfFile.getName() + " " + pdfFile.getVersion() + " has been enabled");

@@ -1,6 +1,9 @@
 package au.com.addstar.naturalhorses;
 
 import java.util.Date;
+import java.util.Random;
+
+import net.minecraft.server.v1_6_R1.EntityHorse;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -10,12 +13,15 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_6_R1.CraftWorld;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.world.ChunkLoadEvent;
 
 public class ChunkListener implements Listener {
 	private NaturalHorses plugin;
+	private Random random = new Random();
 	public ChunkListener(NaturalHorses instance) {
 		plugin = instance;
 	}
@@ -96,9 +102,27 @@ public class ChunkListener implements Listener {
 							//LivingEntity ent = (LivingEntity) world.spawnEntity(entloc, enttype);
 							
 							// Spawn horses the "NMS" way!
+							// Follows the spawning method found in CraftWorld.spawn(entity, reason),
+							// plus logic for horse type.
 							net.minecraft.server.v1_6_R1.World mcWorld = ((CraftWorld) world).getHandle();
-							MyHorse mcEntity = new MyHorse(mcWorld);
-							mcEntity.teleportTo(entloc, false);
+							EntityHorse mcEntity = new EntityHorse(mcWorld);
+							int horsetype = 0; // Horse
+							if (NaturalHorses.RandomGen.nextInt(100) < NaturalHorses.DonkeyChance) {
+								horsetype = 1; // donkey
+							}
+							mcEntity.p(horsetype);
+							
+							// Horse colours/markings
+							if (horsetype == 0) {
+								int variant = NaturalHorses.RandomGen.nextInt(7);
+								int markings = NaturalHorses.RandomGen.nextInt(5);
+								mcEntity.q((markings * 256) + (variant));
+							}
+							
+							// Apply vanilla horse health range
+							((LivingEntity) mcEntity.getBukkitEntity()).setMaxHealth(15 + random.nextInt(8) + random.nextInt(9));
+							mcEntity.setLocation(entloc.getX(), entloc.getY(), entloc.getZ(), entloc.getPitch(), entloc.getYaw());
+							mcWorld.addEntity(mcEntity, SpawnReason.NATURAL);
 							plugin.Debug(mcEntity.getLocalizedName() + " (" + mcEntity.bQ() + "): " + mcEntity.toString());
 
 							EntitySpawned = true;
