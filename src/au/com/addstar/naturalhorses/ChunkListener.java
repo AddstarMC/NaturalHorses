@@ -118,9 +118,8 @@ public class ChunkListener implements Listener {
 							ent.setTamed(false);
 							ent.setSaddled(false);
 							ent.setBred(false);
-							horse.setRemoveWhenFarAway(true);
 
-							// Set the horse MaxHealth: 16 - 30 half hearts (8 - 15 full hearts) 
+							// Set the horse MaxHealth: 15 - 30 half hearts 
 							int mxh = 15 + NaturalHorses.RandomGen.nextInt(8) + NaturalHorses.RandomGen.nextInt(9);
 							horse.setMaxHealth((double) mxh);
 							plugin.Debug(ent.getType().getName() + " (" + ent.getVariant().getName() + "): " + ent.toString());

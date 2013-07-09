@@ -1,4 +1,5 @@
 package au.com.addstar.naturalhorses;
+
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -33,7 +34,7 @@ public class NaturalHorses extends JavaPlugin {
 	public static int ChunkRadius = 2;
 	public static int SpawnChance = 1;
 	public static int DonkeyChance = 10;
-	
+
 	@Override
 	public void onEnable() {
 		// Register necessary events
