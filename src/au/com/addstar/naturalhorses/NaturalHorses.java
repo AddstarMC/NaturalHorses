@@ -59,9 +59,19 @@ public class NaturalHorses extends JavaPlugin {
 		if (WG == null) {
 			Log("WorldGuard not detected, integration disabled.");
 		} else {
-			RM = WG.getRegionManager(getServer().getWorld(HorseWorld));
-			Log("WorldGuard integration successful.");
-			
+			try {
+				RM = WG.getRegionManager(getServer().getWorld(HorseWorld));
+				if (RM == null) {
+					Warn("WorldGuard integration failed! getRegionManager returned null");
+					WG = null;
+				} else {
+					Log("WorldGuard integration successful.");
+				}
+			} catch(Exception e) {
+				Warn("WorldGuard integration failed! Exception in getRegionManager: " + e.hashCode() + " - " + e.getLocalizedMessage());
+				RM = null;
+				WG = null;
+			}
 		}
 
 		pm.registerEvents(new ChunkListener(this), this);
