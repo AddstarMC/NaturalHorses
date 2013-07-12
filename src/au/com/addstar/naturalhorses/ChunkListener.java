@@ -10,13 +10,14 @@ import org.bukkit.Material;
 import org.bukkit.World;
 //import org.bukkit.craftbukkit.v1_6_R1.CraftWorld;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Horse.Color;
+import org.bukkit.entity.Horse.Style;
+import org.bukkit.entity.Horse.Variant;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
-
-import au.com.addstar.naturalhorses.HorseModifier.HorseType;
-import au.com.addstar.naturalhorses.HorseModifier.HorseVariant;
 
 public class ChunkListener implements Listener {
 	private NaturalHorses plugin;
@@ -94,36 +95,32 @@ public class ChunkListener implements Listener {
 								return;
 							}
 
-							//plugin.Debug("Spawn at: " + world.getName() + " / X:" + entloc.getBlockX() + " Y:" + entloc.getBlockY() + " Z:" + entloc.getBlockZ());
-
 							// Spawn the horse/donkey
-							HorseModifier ent = HorseModifier.spawn(entloc);
-							LivingEntity horse = ent.getHorse();
+							Horse horse = (Horse) world.spawnEntity(entloc, EntityType.HORSE);
 
 							// Donkey or horse?
 							if (NaturalHorses.RandomGen.nextInt(100) < NaturalHorses.DonkeyChance) {
-								ent.setType(HorseType.DONKEY);
+								horse.setVariant(Variant.DONKEY);
 							} else {
-								ent.setType(HorseType.NORMAL);
+								horse.setVariant(Variant.HORSE);
 							}
 
 							// Horse colours/markings
-							if (ent.getType() == HorseType.NORMAL) {
-								int variant = NaturalHorses.RandomGen.nextInt(7);
-								int markings = NaturalHorses.RandomGen.nextInt(5);
-								int id = ((markings * 256) + (variant));
-								ent.setVariant(HorseVariant.fromId(id));
+							if (horse.getVariant() == Variant.HORSE) {
+								int color = NaturalHorses.RandomGen.nextInt(7);
+								int style = NaturalHorses.RandomGen.nextInt(5);								
+								horse.setStyle(Style.values()[style]);
+								horse.setColor(Color.values()[color]);
 							}
-							
-							ent.setTamed(false);
-							ent.setSaddled(false);
-							ent.setBred(false);
 
 							// Set the horse MaxHealth: 15 - 30 half hearts 
 							int mxh = 15 + NaturalHorses.RandomGen.nextInt(8) + NaturalHorses.RandomGen.nextInt(9);
 							horse.setMaxHealth((double) mxh);
-							plugin.Debug(ent.getType().getName() + " (" + ent.getVariant().getName() + "): " + ent.toString());
+							
+							// Prevent horses from despawning
+							horse.setRemoveWhenFarAway(false);
 
+							plugin.Debug(horse.getVariant() + " (" + horse.getColor() + " " + horse.getStyle() + ": " + horse.toString());
 							EntitySpawned = true;
 						} else {
 							plugin.Debug("Entity spawning disabled here");
