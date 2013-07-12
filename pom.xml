@@ -75,9 +75,10 @@
       <resource>
         <targetPath>.</targetPath>
         <filtering>true</filtering>
-        <directory>${basedir}/resources/</directory>
+        <directory>${basedir}/</directory>
         <includes>
-          <include>**</include>
+          <include>config.yml</include>
+          <include>plugin.yml</include>
         </includes>
       </resource>
     </resources>
