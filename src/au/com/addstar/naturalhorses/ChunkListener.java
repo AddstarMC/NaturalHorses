@@ -51,7 +51,7 @@ public class ChunkListener implements Listener {
 		// Only spawn horses in "full plains" (all four corners are plains)
 		if (bname == "FULL PLAINS") {
 			// % chance of spawning?
-			if (NaturalHorses.RandomGen.nextInt(100) < NaturalHorses.SpawnChance) {
+			if ((NaturalHorses.RandomGen.nextDouble() * 100) < NaturalHorses.SpawnChance) {
 				
 				// Surrounding chunks must also be empty (grid loop)
 				int from = (0 - NaturalHorses.ChunkRadius);
@@ -89,17 +89,16 @@ public class ChunkListener implements Listener {
 
 						// Check if WorldGuard allows us to spawn here
 						if (plugin.CanSpawnMob(entloc)) {
-							//plugin.Debug("Last spawn " + (plugin.LastSpawn / 1000) + " / now " + (now / 1000));
 							if ((plugin.LastSpawn > 0) && (now < (plugin.LastSpawn + (NaturalHorses.SpawnDelay * 1000)))) {
 								plugin.Debug("Too soon.. Refusing to spawn anything");
 								return;
 							}
 
-							// Spawn the horse/donkey
+							// Spawn the horse/donkey (YAY!! Horse API! :)
 							Horse horse = (Horse) world.spawnEntity(entloc, EntityType.HORSE);
 
 							// Donkey or horse?
-							if (NaturalHorses.RandomGen.nextInt(100) < NaturalHorses.DonkeyChance) {
+							if ((NaturalHorses.RandomGen.nextDouble() * 100) < NaturalHorses.DonkeyChance) {
 								horse.setVariant(Variant.DONKEY);
 							} else {
 								horse.setVariant(Variant.HORSE);

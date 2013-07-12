@@ -20,7 +20,7 @@ public class ConfigManager {
 		NaturalHorses.BroadcastLocation = Config().getBoolean("broadcast-location");
 		NaturalHorses.SpawnDelay = Config().getInt("spawn-delay");
 		NaturalHorses.ChunkRadius = Config().getInt("chunk-check-radius");
-		NaturalHorses.SpawnChance = Config().getInt("spawn-chance");
-		NaturalHorses.DonkeyChance = Config().getInt("donkey-chance");
+		NaturalHorses.SpawnChance = Config().getDouble("spawn-chance");
+		NaturalHorses.DonkeyChance = Config().getDouble("donkey-chance");
 	}
 }

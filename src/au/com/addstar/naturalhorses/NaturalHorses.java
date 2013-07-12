@@ -32,8 +32,8 @@ public class NaturalHorses extends JavaPlugin {
 	public static String HorseWorld = "survival";
 	public static int SpawnDelay = 30;
 	public static int ChunkRadius = 2;
-	public static int SpawnChance = 1;
-	public static int DonkeyChance = 10;
+	public static double SpawnChance = 0.01;
+	public static double DonkeyChance = 10;
 
 	@Override
 	public void onEnable() {
