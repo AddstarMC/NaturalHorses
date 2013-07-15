@@ -4,9 +4,10 @@ debug: false
 # Broadcast the location of each horse group spawned (debugging only!)
 broadcast-location: false
 
-# World that horses should spawn in
-horse-world: world
-
+# Worlds that horses should spawn in (one world per line)
+horse-worlds:
+  - world
+  
 # MINIMUM time before more horses are able to spawn
 spawn-delay: 180
 
@@ -18,3 +19,7 @@ spawn-chance: 1
 
 # % Chance that it will spawn a donkey instead of a horse
 donkey-chance: 10
+
+# Min/max number of horses spawned in each group/herd
+min-horses: 2
+max-horses: 7

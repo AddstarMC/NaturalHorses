@@ -28,7 +28,7 @@ public class ChunkListener implements Listener {
 	@EventHandler
 	public void onChunkLoad(ChunkLoadEvent event) {
 		if (event.isNewChunk()) { return; }
-		if (!event.getWorld().getName().equals(NaturalHorses.HorseWorld)) { return; }
+		if (!NaturalHorses.HorseWorlds.contains(event.getWorld().getName())) { return; }
 		
 		World world = event.getWorld();
 		Chunk chunk = event.getChunk();
@@ -73,7 +73,7 @@ public class ChunkListener implements Listener {
 				plugin.Debug("Chunk: " + world.getName() + ": " + CX + "/" + CZ + " = " + BX + " / " + BZ);
 
 				// How many horses to spawn?
-				int h = NaturalHorses.RandomGen.nextInt(5) + 2;
+				int h = NaturalHorses.RandomGen.nextInt((NaturalHorses.MaxHorses - NaturalHorses.MinHorses)) + NaturalHorses.MinHorses;
 				Date date = new Date();
 				long now = date.getTime();
 				

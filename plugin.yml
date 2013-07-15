@@ -2,7 +2,7 @@ name: NaturalHorses
 main: au.com.addstar.naturalhorses.NaturalHorses
 version: "${project.version}"
 author: add5tar
-softdepend: [Essentials, Vault, Multiverse-Core, My Worlds]
+softdepend: [Vault, Multiverse-Core, My Worlds, WorldGuard, WorldEdit, Essentials]
 website: http://dev.bukkit.org/server-mods/naturalhorses/
 dev-url: http://dev.bukkit.org/server-mods/naturalhorses/
 description: Allow horses to naturally spawn in old (non-1.6) chunks

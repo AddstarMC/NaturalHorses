@@ -1,5 +1,9 @@
 package au.com.addstar.naturalhorses;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -22,18 +26,20 @@ public class NaturalHorses extends JavaPlugin {
 	private static final Logger logger = Logger.getLogger("Minecraft");
 	public ConfigManager cfg = new ConfigManager(this);
 	public WorldGuardPlugin WG;
-	public RegionManager RM;
+	public Map<String, RegionManager> RMS = new HashMap<String, RegionManager>();
 	public long LastSpawn = 0;
 	public static Random RandomGen = new Random();
 
 	// Pluing settings
-	public static boolean DebugEnabled = false;
-	public static boolean BroadcastLocation = false;
-	public static String HorseWorld = "survival";
-	public static int SpawnDelay = 30;
-	public static int ChunkRadius = 2;
-	public static double SpawnChance = 0.01;
-	public static double DonkeyChance = 10;
+	public static boolean DebugEnabled;
+	public static boolean BroadcastLocation;
+	public static List<String> HorseWorlds = new ArrayList<String>();
+	public static int SpawnDelay;
+	public static int ChunkRadius;
+	public static double SpawnChance;
+	public static double DonkeyChance;
+	public static int MinHorses;
+	public static int MaxHorses;
 
 	@Override
 	public void onEnable() {
@@ -41,15 +47,14 @@ public class NaturalHorses extends JavaPlugin {
 		pdfFile = this.getDescription();
 		pm = this.getServer().getPluginManager();
 
-		// Read (or initialise) plugin config file
-		cfg.LoadConfig(getConfig());
-
 		// Save the default config (if one doesn't exist)
 		saveDefaultConfig();
 
+		// Read (or initialise) plugin config file
+		cfg.LoadConfig(getConfig());
+
 		// Make sure the world is valid
-		if (getServer().getWorld(HorseWorld) == null) {
-			Log("World \"" + HorseWorld + "\" does not exist!");
+		if (HorseWorlds.size() == 0) {
 			Log(pdfFile.getName() + " " + pdfFile.getVersion() + " has NOT been enabled!");
 			this.setEnabled(false);
 			return;
@@ -59,19 +64,27 @@ public class NaturalHorses extends JavaPlugin {
 		if (WG == null) {
 			Log("WorldGuard not detected, integration disabled.");
 		} else {
-			try {
-				RM = WG.getRegionManager(getServer().getWorld(HorseWorld));
-				if (RM == null) {
-					Warn("WorldGuard integration failed! getRegionManager returned null");
+				for (String world : HorseWorlds) {
+					try {
+						RegionManager RM = WG.getRegionManager(getServer().getWorld(world));
+						if (RM == null) {
+							Warn("Unable to integrate WorldGuard for world \"" + world + "\"");
+							continue;
+						}
+						Debug("Found RegionManager for \"" + world + "\"");
+						RMS.put(world, RM);
+					} catch(Exception e) {
+						Warn("WorldGuard integration failed for \"" + world + "\"! Exception in getRegionManager: " + e.hashCode() + " - " + e.getLocalizedMessage());
+						WG = null;
+					}
+				}
+				
+				if (RMS.size() == 0) {
+					Warn("WorldGuard integration failed!");
 					WG = null;
 				} else {
 					Log("WorldGuard integration successful.");
 				}
-			} catch(Exception e) {
-				Warn("WorldGuard integration failed! Exception in getRegionManager: " + e.hashCode() + " - " + e.getLocalizedMessage());
-				RM = null;
-				WG = null;
-			}
 		}
 
 		pm.registerEvents(new ChunkListener(this), this);
@@ -109,9 +122,18 @@ public class NaturalHorses extends JavaPlugin {
 	}
 	
 	public boolean CanSpawnMob(Location loc) {
+		// WorldGuard integration is completely disabled?
 		if (WG == null) { return true; }
+		
+		// World has a RegionManager?
+		RegionManager RM = RMS.get(loc.getWorld().getName());
+		if (RM == null) { return true; }
+		
+		// Get the applicable region in this location
 		ApplicableRegionSet set = RM.getApplicableRegions(loc);
 		if (set == null) { return true; }
+		
+		// Return the value of the "mob-spawning" flag for this region  
 		return set.allows(DefaultFlag.MOB_SPAWNING);
 	}
 }
