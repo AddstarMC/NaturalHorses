@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Logger;
 
+import au.com.addstar.naturalhorses.Metrics.Graph;
+
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 import org.bukkit.Location;
@@ -30,6 +32,8 @@ public class NaturalHorses extends JavaPlugin {
 	public Map<String, RegionManager> RMS = new HashMap<String, RegionManager>();
 	public long LastSpawn = 0;
 	public static Random RandomGen = new Random();
+	public int MetricHorsesSpawned = 0;
+	public int MetricDonkeysSpawned = 0;
 
 	// Pluing settings
 	public static boolean DebugEnabled;
@@ -88,15 +92,7 @@ public class NaturalHorses extends JavaPlugin {
 				}
 		}
 
-		// Upload stats
-		try {
-		    Metrics metrics = new Metrics(this);
-		    metrics.start();
-		} catch (IOException e) {
-		    // Failed to submit the stats :-(
-			Warn("Metrics sending failed!!");
-			e.printStackTrace();
-		}
+		SetupMetrics();
 		
 		pm.registerEvents(new ChunkListener(this), this);
 		Log(pdfFile.getName() + " " + pdfFile.getVersion() + " has been enabled");
@@ -146,5 +142,43 @@ public class NaturalHorses extends JavaPlugin {
 		
 		// Return the value of the "mob-spawning" flag for this region  
 		return set.allows(DefaultFlag.MOB_SPAWNING);
+	}
+	
+	private void SetupMetrics() {
+		// Upload stats
+		try {
+		    Metrics metrics = new Metrics(this);
+		    if (metrics.isOptOut()) { return; }
+		    
+			Graph animalGraph = metrics.createGraph("Animals Spawned");
+			
+		    animalGraph.addPlotter(new Metrics.Plotter("Horses") {
+	            @Override
+	            public int getValue() {
+                    return MetricHorsesSpawned; // Number of horses spawned
+	            }
+	            @Override
+	            public void reset() {
+	            	MetricHorsesSpawned = 0;
+	            }
+		    });
+
+		    animalGraph.addPlotter(new Metrics.Plotter("Donkeys") {
+	            @Override
+	            public int getValue() {
+                    return MetricDonkeysSpawned; // Number of donkeys spawned
+	            }
+	            @Override
+	            public void reset() {
+	            	MetricDonkeysSpawned = 0;
+	            }
+		    });		
+		    
+		    metrics.start();
+		} catch (IOException e) {
+		    // Failed to submit the stats :-(
+			Warn("Metrics sending failed!!");
+			e.printStackTrace();
+		}
 	}
 }

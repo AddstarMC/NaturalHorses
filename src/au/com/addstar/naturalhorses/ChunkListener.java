@@ -110,6 +110,9 @@ public class ChunkListener implements Listener {
 								int style = NaturalHorses.RandomGen.nextInt(5);								
 								horse.setStyle(Style.values()[style]);
 								horse.setColor(Color.values()[color]);
+								plugin.MetricHorsesSpawned++;
+							} else {
+								plugin.MetricDonkeysSpawned++;
 							}
 
 							// Set the horse MaxHealth: 15 - 30 half hearts 
