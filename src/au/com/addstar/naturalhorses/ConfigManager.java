@@ -32,10 +32,9 @@ public class ConfigManager {
 
 		// Validate the list of "horse" worlds
 		List<?> worlds = Config().getList("horse-worlds");
-		plugin.Debug("Horse-world: " + worlds);
 		for (int x = 0; x < worlds.size(); x++) {
 			String name = (String) worlds.get(x);
-			plugin.Debug("Config world: " + name);
+			plugin.Debug("Checking world: " + name);
 			World world = plugin.getServer().getWorld(name);
 			if (world == null) {
 				plugin.Warn("World \"" + name + "\" is not valid! It will be ignored.");

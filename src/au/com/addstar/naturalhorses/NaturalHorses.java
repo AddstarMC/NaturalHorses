@@ -155,10 +155,12 @@ public class NaturalHorses extends JavaPlugin {
 		    animalGraph.addPlotter(new Metrics.Plotter("Horses") {
 	            @Override
 	            public int getValue() {
+	            	Debug("METRICS: Current donkey counter: " + MetricHorsesSpawned);
                     return MetricHorsesSpawned; // Number of horses spawned
 	            }
 	            @Override
 	            public void reset() {
+	            	Debug("METRICS: Resetting horse counter..");
 	            	MetricHorsesSpawned = 0;
 	            }
 		    });
@@ -166,10 +168,12 @@ public class NaturalHorses extends JavaPlugin {
 		    animalGraph.addPlotter(new Metrics.Plotter("Donkeys") {
 	            @Override
 	            public int getValue() {
+	            	Debug("METRICS: Current donkey counter: " + MetricDonkeysSpawned);
                     return MetricDonkeysSpawned; // Number of donkeys spawned
 	            }
 	            @Override
 	            public void reset() {
+	            	Debug("METRICS: Resetting donkey counter..");
 	            	MetricDonkeysSpawned = 0;
 	            }
 		    });		
