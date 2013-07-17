@@ -1,5 +1,6 @@
 package au.com.addstar.naturalhorses;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.Plugin;
+import org.mcstats.Metrics;
 
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -87,6 +89,16 @@ public class NaturalHorses extends JavaPlugin {
 				}
 		}
 
+		// Upload stats
+		try {
+		    Metrics metrics = new Metrics(this);
+		    metrics.start();
+		} catch (IOException e) {
+		    // Failed to submit the stats :-(
+			Warn("Metrics sending failed!!");
+			e.printStackTrace();
+		}
+		
 		pm.registerEvents(new ChunkListener(this), this);
 		Log(pdfFile.getName() + " " + pdfFile.getVersion() + " has been enabled");
 	}
