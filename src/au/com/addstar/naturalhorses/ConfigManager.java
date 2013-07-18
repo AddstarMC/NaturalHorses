@@ -49,11 +49,11 @@ public class ConfigManager {
 		// Validate the list of biomes where horses should spawn
 		List<?> biomes = Config().getList("horse-biomes");
 		for (int x = 0; x < biomes.size(); x++) {
-			String name = (String) biomes.get(x);
+			String name = ((String) biomes.get(x)).toUpperCase();
 			plugin.Debug("Checking biome: " + name);
 			try {
 				// Attempt to enum the name
-				Biome.valueOf(name.toUpperCase());
+				Biome.valueOf(name);
 
 				// We get the name again, to ensure the case is correct and we match it easily in the listener
 				NaturalHorses.HorseBiomes.add(name);
@@ -61,7 +61,7 @@ public class ConfigManager {
 				plugin.Warn("Biome \"" + name + "\" is not valid! It will be ignored.");
 			}
 		}
-		plugin.Debug("Enabled worlds: " + NaturalHorses.HorseWorlds);
+		plugin.Debug("Enabled biomes: " + NaturalHorses.HorseBiomes);
 		
 		// Validate min/max values
 		NaturalHorses.MaxHorses = Config().getInt("max-horses", 7);
