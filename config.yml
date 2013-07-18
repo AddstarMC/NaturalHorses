@@ -9,6 +9,7 @@ horse-worlds:
   - world
 
 # List of biomes that horses are allowed to spawn in (default: plains)
+# Get the full list of valid names from: http://jd.bukkit.org/rb/apidocs/org/bukkit/block/Biome.html
 horse-biomes:
   - plains
   

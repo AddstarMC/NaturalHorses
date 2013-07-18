@@ -157,13 +157,13 @@ public class NaturalHorses extends JavaPlugin {
 		try {
 		    Metrics metrics = new Metrics(this);
 		    if (metrics.isOptOut()) { return; }
-		    
+
+		    // Graph the spawned animals
 			Graph animalGraph = metrics.createGraph("Animals Spawned");
-			
 		    animalGraph.addPlotter(new Metrics.Plotter("Horses") {
 	            @Override
 	            public int getValue() {
-	            	Debug("METRICS: Current donkey counter: " + MetricHorsesSpawned);
+	            	Debug("METRICS: Current horse counter: " + MetricHorsesSpawned);
                     return MetricHorsesSpawned; // Number of horses spawned
 	            }
 	            @Override
@@ -171,7 +171,6 @@ public class NaturalHorses extends JavaPlugin {
 	            	MetricHorsesSpawned = 0;
 	            }
 		    });
-
 		    animalGraph.addPlotter(new Metrics.Plotter("Donkeys") {
 	            @Override
 	            public int getValue() {
@@ -183,8 +182,20 @@ public class NaturalHorses extends JavaPlugin {
 	            	MetricDonkeysSpawned = 0;
 	            }
 		    });		
-		    
-		    metrics.addGraph(animalGraph);
+
+		    // Graph the enabled biomes
+			Graph biomeGraph = metrics.createGraph("Biomes Enabled");
+			for (String biome : HorseBiomes) {
+				biome = biome.replace('_', ' ').toLowerCase();
+				biomeGraph.addPlotter(new Metrics.Plotter(biome) {
+		            @Override
+		            public int getValue() {
+		            	Debug("METRICS: Enabled biome: " + this.getColumnName());
+		            	return 1;
+		            }
+			    });
+			}
+
 		    metrics.start();
 		} catch (IOException e) {
 		    // Failed to submit the stats :-(
