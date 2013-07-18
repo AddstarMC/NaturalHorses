@@ -168,7 +168,6 @@ public class NaturalHorses extends JavaPlugin {
 	            }
 	            @Override
 	            public void reset() {
-	            	Debug("METRICS: Resetting horse counter..");
 	            	MetricHorsesSpawned = 0;
 	            }
 		    });
@@ -181,11 +180,11 @@ public class NaturalHorses extends JavaPlugin {
 	            }
 	            @Override
 	            public void reset() {
-	            	Debug("METRICS: Resetting donkey counter..");
 	            	MetricDonkeysSpawned = 0;
 	            }
 		    });		
 		    
+		    metrics.addGraph(animalGraph);
 		    metrics.start();
 		} catch (IOException e) {
 		    // Failed to submit the stats :-(
