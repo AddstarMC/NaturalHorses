@@ -51,11 +51,14 @@ public class ConfigManager {
 		for (int x = 0; x < biomes.size(); x++) {
 			String name = (String) biomes.get(x);
 			plugin.Debug("Checking biome: " + name);
-			if (Biome.valueOf(name) == null) {
-				plugin.Warn("Biome \"" + name + "\" is not valid! It will be ignored.");
-			} else {
+			try {
+				// Attempt to enum the name
+				Biome.valueOf(name.toUpperCase());
+
 				// We get the name again, to ensure the case is correct and we match it easily in the listener
 				NaturalHorses.HorseBiomes.add(name);
+			} catch (Exception e) {
+				plugin.Warn("Biome \"" + name + "\" is not valid! It will be ignored.");
 			}
 		}
 		plugin.Debug("Enabled worlds: " + NaturalHorses.HorseWorlds);
