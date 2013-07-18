@@ -2,6 +2,7 @@ package au.com.addstar.naturalhorses;
 import java.util.List;
 
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class ConfigManager {
@@ -43,7 +44,20 @@ public class ConfigManager {
 				NaturalHorses.HorseWorlds.add(world.getName());
 			}
 		}
+		plugin.Debug("Enabled worlds: " + NaturalHorses.HorseWorlds);
 		
+		// Validate the list of biomes where horses should spawn
+		List<?> biomes = Config().getList("horse-biomes");
+		for (int x = 0; x < biomes.size(); x++) {
+			String name = (String) biomes.get(x);
+			plugin.Debug("Checking biome: " + name);
+			if (Biome.valueOf(name) == null) {
+				plugin.Warn("Biome \"" + name + "\" is not valid! It will be ignored.");
+			} else {
+				// We get the name again, to ensure the case is correct and we match it easily in the listener
+				NaturalHorses.HorseBiomes.add(name);
+			}
+		}
 		plugin.Debug("Enabled worlds: " + NaturalHorses.HorseWorlds);
 		
 		// Validate min/max values

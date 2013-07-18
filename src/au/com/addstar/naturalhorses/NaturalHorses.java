@@ -39,6 +39,7 @@ public class NaturalHorses extends JavaPlugin {
 	public static boolean DebugEnabled;
 	public static boolean BroadcastLocation;
 	public static List<String> HorseWorlds = new ArrayList<String>();
+	public static List<String> HorseBiomes = new ArrayList<String>();
 	public static int SpawnDelay;
 	public static int ChunkRadius;
 	public static double SpawnChance;
@@ -58,8 +59,15 @@ public class NaturalHorses extends JavaPlugin {
 		// Read (or initialise) plugin config file
 		cfg.LoadConfig(getConfig());
 
-		// Make sure the world is valid
+		// Make sure we have at least 1 valid world
 		if (HorseWorlds.size() == 0) {
+			Log(pdfFile.getName() + " " + pdfFile.getVersion() + " has NOT been enabled!");
+			this.setEnabled(false);
+			return;
+		}
+
+		// Make sure we have at least 1 valid biome
+		if (HorseBiomes.size() == 0) {
 			Log(pdfFile.getName() + " " + pdfFile.getVersion() + " has NOT been enabled!");
 			this.setEnabled(false);
 			return;

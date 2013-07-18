@@ -7,6 +7,10 @@ broadcast-location: false
 # Worlds that horses should spawn in (one world per line)
 horse-worlds:
   - world
+
+# List of biomes that horses are allowed to spawn in (default: plains)
+horse-biomes:
+  - plains
   
 # MINIMUM time before more horses are able to spawn
 spawn-delay: 180
@@ -14,10 +18,10 @@ spawn-delay: 180
 # Only spawn horses if X surrounding chunks are animal free 
 chunk-check-radius: 3
 
-# % Chance of spawning horse or donkey
+# Percent chance of spawning horse or donkey
 spawn-chance: 1
 
-# % Chance that it will spawn a donkey instead of a horse
+# Percent chance that donkey will be spawned instead of a horse
 donkey-chance: 10
 
 # Min/max number of horses spawned in each group/herd
